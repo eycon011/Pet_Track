@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PetTrack — Seu Pet, Sempre Seguro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  :root {
+    --orange: #f99830;
+    --orange-light: #fdb96a;
+    --orange-dark: #e07d10;
+    --orange-pale: #fff4e3;
+    --white: #ffffff;
+    --gray-50: #fafafa;
+    --gray-100: #f5f5f5;
+    --gray-200: #e8e8e8;
+    --gray-500: #9e9e9e;
+    --gray-700: #4a4a4a;
+    --gray-900: #1a1a1a;
+    --success: #4caf50;
+    --shadow: 0 8px 32px rgba(249,152,48,0.15);
+    --shadow-card: 0 4px 20px rgba(0,0,0,0.08);
+    --radius: 20px;
+    --radius-sm: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--white);
+    color: var(--gray-900);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1.5px solid rgba(249,152,48,0.12);
+    padding: 0 5%;
+    height: 68px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.6rem; font-weight: 800;
+    color: var(--orange);
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer;
+  }
+  .nav-logo span { font-size: 1.4rem; }
+  .nav-links { display: flex; align-items: center; gap: 24px; }
+  .nav-links a {
+    font-weight: 600; font-size: 0.9rem;
+    color: var(--gray-700); text-decoration: none;
+    transition: color 0.2s; cursor: pointer;
+  }
+  .nav-links a:hover { color: var(--orange); }
+  .btn {
+    padding: 10px 24px; border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700; font-size: 0.9rem;
+    cursor: pointer; transition: all 0.2s; border: none;
+  }
+  .btn-primary {
+    background: var(--orange); color: white;
+    box-shadow: 0 4px 16px rgba(249,152,48,0.35);
+  }
+  .btn-primary:hover {
+    background: var(--orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(249,152,48,0.45);
+  }
+  .btn-outline {
+    background: transparent; color: var(--orange);
+    border: 2px solid var(--orange);
+  }
+  .btn-outline:hover { background: var(--orange-pale); }
+  .btn-lg { padding: 14px 36px; font-size: 1rem; }
+  .btn-sm { padding: 8px 18px; font-size: 0.82rem; }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    padding: 120px 5% 80px;
+    display: flex; align-items: center;
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #fff 0%, var(--orange-pale) 100%);
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    pointer-events: none; overflow: hidden;
+  }
+  .hero-bg svg {
+    position: absolute;
+    opacity: 0.07;
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 600px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: white; border: 2px solid var(--orange);
+    border-radius: 50px; padding: 6px 16px;
+    font-size: 0.82rem; font-weight: 700; color: var(--orange);
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(2.5rem, 5vw, 3.8rem);
+    font-weight: 800; line-height: 1.15;
+    color: var(--gray-900);
+    margin-bottom: 20px;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+  .hero h1 span { color: var(--orange); }
+  .hero p {
+    font-size: 1.05rem; color: var(--gray-700);
+    line-height: 1.7; margin-bottom: 36px;
+    animation: fadeUp 0.7s 0.2s ease both;
+    max-width: 480px;
+  }
+  .hero-btns {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+  .hero-visual {
+    position: absolute; right: 5%; top: 50%;
+    transform: translateY(-50%);
+    width: min(420px, 45vw);
+    display: flex; justify-content: center; align-items: center;
+    animation: floatIn 0.9s 0.2s ease both;
+  }
+  .hero-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow), 0 0 0 1px rgba(249,152,48,0.1);
+    width: 100%;
+  }
+  .hero-card-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px;
+  }
+  .pet-avatar {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: var(--orange-pale);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    border: 3px solid var(--orange);
+  }
+  .hero-stats {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-top: 16px;
+  }
+  .stat-box {
+    background: var(--orange-pale);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-box .num {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.6rem; font-weight: 800;
+    color: var(--orange); display: block;
+  }
+  .stat-box .lbl {
+    font-size: 0.75rem; color: var(--gray-700); font-weight: 600;
+  }
+
+  /* ─── SECTIONS ─── */
+  .section { padding: 80px 5%; }
+  .section-center { text-align: center; }
+  .section-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 800; color: var(--gray-900);
+    margin-bottom: 12px;
+  }
+  .section-title span { color: var(--orange); }
+  .section-sub {
+    font-size: 1rem; color: var(--gray-500);
+    max-width: 520px; margin: 0 auto 48px;
+    line-height: 1.7;
+  }
+
+  /* ─── FEATURES ─── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+  }
+  .feature-card {
+    background: white;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: all 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--orange), var(--orange-light));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .feature-card:hover {
+    border-color: var(--orange);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 52px; height: 52px;
+    background: var(--orange-pale);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; margin-bottom: 18px;
+  }
+  .feature-card h3 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.15rem; font-weight: 700;
+    margin-bottom: 8px; color: var(--gray-900);
+  }
+  .feature-card p { font-size: 0.88rem; color: var(--gray-500); line-height: 1.6; }
+  .badge-premium {
+    display: inline-block; background: var(--orange);
+    color: white; font-size: 0.68rem; font-weight: 800;
+    padding: 2px 8px; border-radius: 50px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-left: 8px; vertical-align: middle;
+  }
+
+  /* ─── PRICING ─── */
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px; max-width: 700px; margin: 0 auto;
+  }
+  .price-card {
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    border: 2px solid var(--gray-200);
+    position: relative; transition: all 0.3s;
+  }
+  .price-card.featured {
+    border-color: var(--orange);
+    box-shadow: var(--shadow);
+    background: white;
+  }
+  .price-badge {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--orange); color: white;
+    font-size: 0.75rem; font-weight: 800;
+    padding: 4px 16px; border-radius: 50px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .price-name {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.2rem; font-weight: 700;
+    color: var(--gray-700); margin-bottom: 4px;
+  }
+  .price-val {
+    font-family: 'Baloo 2', cursive;
+    font-size: 2.6rem; font-weight: 800;
+    color: var(--orange); line-height: 1;
+  }
+  .price-val sup { font-size: 1rem; vertical-align: top; margin-top: 10px; display: inline-block; }
+  .price-val sub { font-size: 0.9rem; color: var(--gray-500); }
+  .price-list { list-style: none; margin: 24px 0; }
+  .price-list li {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.9rem; padding: 7px 0;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-700);
+  }
+  .price-list li span.check { color: var(--success); font-size: 1rem; }
+  .price-list li span.x { color: var(--gray-300); }
+
+  /* ─── APP SCREENS / MODALS ─── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal {
+    background: white; border-radius: var(--radius);
+    padding: 36px; width: 100%; max-width: 440px;
+    max-height: 90vh; overflow-y: auto;
+    animation: slideUp 0.3s ease;
+    position: relative;
+  }
+  .modal-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.6rem; font-weight: 800;
+    color: var(--gray-900); margin-bottom: 4px;
+  }
+  .modal-sub { font-size: 0.88rem; color: var(--gray-500); margin-bottom: 28px; }
+  .form-group { margin-bottom: 18px; }
+  .form-label {
+    display: block; font-size: 0.82rem; font-weight: 700;
+    color: var(--gray-700); margin-bottom: 6px;
+  }
+  .form-input {
+    width: 100%; padding: 12px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem; color: var(--gray-900);
+    transition: border-color 0.2s; outline: none;
+    background: var(--gray-50);
+  }
+  .form-input:focus { border-color: var(--orange); background: white; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .close-btn {
+    position: absolute; top: 16px; right: 16px;
+    background: var(--gray-100); border: none;
+    border-radius: 50%; width: 32px; height: 32px;
+    font-size: 1.1rem; cursor: pointer; color: var(--gray-700);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ─── DASHBOARD ─── */
+  .dashboard {
+    min-height: 100vh;
+    padding: 88px 5% 40px;
+    background: var(--gray-50);
+  }
+  .dash-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+  }
+  .dash-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.8rem; font-weight: 800; color: var(--gray-900);
+  }
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  .dash-card {
+    background: white; border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow-card);
+    border: 1.5px solid var(--gray-100);
+  }
+  .dash-card-title {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1rem; font-weight: 700;
+    color: var(--gray-700); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ─── QR CODE display ─── */
+  .qr-container {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 16px;
+  }
+  .qr-img {
+    width: 180px; height: 180px;
+    border-radius: 16px;
+    border: 3px solid var(--orange);
+    padding: 8px; background: white;
+    object-fit: contain;
+  }
+  .qr-placeholder {
+    width: 180px; height: 180px;
+    border-radius: 16px;
+    border: 3px dashed var(--orange);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; background: var(--orange-pale);
+  }
+
+  /* ─── TRACKER MAP MOCK ─── */
+  .tracker-map {
+    width: 100%; height: 220px;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tracker-map-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+  .tracker-dot {
+    width: 20px; height: 20px;
+    background: var(--orange);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 6px rgba(249,152,48,0.25);
+    position: relative; z-index: 2;
+    animation: pulse 2s infinite;
+  }
+  .tracker-label {
+    position: absolute; bottom: 12px; left: 12px;
+    background: white; border-radius: 8px;
+    padding: 6px 12px; font-size: 0.78rem; font-weight: 700;
+    color: var(--gray-700);
+    box-shadow: var(--shadow-card);
+  }
+
+  /* ─── DELIVERY TRACKER ─── */
+  .delivery-steps { display: flex; flex-direction: column; gap: 0; }
+  .delivery-step {
+    display: flex; gap: 16px; padding: 14px 0;
+    position: relative;
+  }
+  .delivery-step:not(:last-child)::after {
+    content: '';
+    position: absolute; left: 17px; top: 42px;
+    width: 2px; height: calc(100% - 28px);
+    background: var(--gray-200);
+  }
+  .delivery-step.done::after { background: var(--success); }
+  .step-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--gray-200);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0; z-index: 1;
+    transition: all 0.4s;
+  }
+  .delivery-step.done .step-circle {
+    background: var(--success); color: white;
+  }
+  .delivery-step.active .step-circle {
+    background: var(--orange); color: white;
+    animation: pulse 2s infinite;
+  }
+  .step-info { padding-top: 6px; }
+  .step-name { font-weight: 700; font-size: 0.9rem; color: var(--gray-900); }
+  .step-time { font-size: 0.78rem; color: var(--gray-500); margin-top: 2px; }
+
+  /* ─── AI CHAT ─── */
+  .ai-chat {
+    display: flex; flex-direction: column;
+    height: 100%;
+  }
+  .chat-messages {
+    flex: 1; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 4px 0; max-height: 280px;
+  }
+  .chat-bubble {
+    padding: 10px 16px; border-radius: 16px;
+    max-width: 85%; font-size: 0.875rem; line-height: 1.5;
+  }
+  .chat-bubble.bot {
+    background: var(--orange-pale);
+    color: var(--gray-900);
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+  }
+  .chat-bubble.user {
+    background: var(--orange); color: white;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+  }
+  .chat-input-row {
+    display: flex; gap: 10px; margin-top: 14px;
+  }
+  .chat-input {
+    flex: 1; padding: 10px 16px;
+    border: 2px solid var(--gray-200);
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem; outline: none;
+    transition: border-color 0.2s;
+  }
+  .chat-input:focus { border-color: var(--orange); }
+  .chat-send {
+    width: 40px; height: 40px;
+    background: var(--orange); border: none;
+    border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; color: white; transition: all 0.2s;
+  }
+  .chat-send:hover { background: var(--orange-dark); transform: scale(1.05); }
+
+  /* ─── PUBLIC PROFILE (QR landing) ─── */
+  .profile-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--orange-pale) 0%, white 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .profile-card {
+    background: white; border-radius: 28px;
+    padding: 40px 32px;
+    box-shadow: 0 20px 60px rgba(249,152,48,0.2);
+    width: 100%; max-width: 400px;
+    text-align: center;
+    border: 2px solid rgba(249,152,48,0.15);
+  }
+  .profile-pet-emoji {
+    font-size: 4rem; margin-bottom: 8px;
+    filter: drop-shadow(0 4px 12px rgba(249,152,48,0.3));
+  }
+  .profile-pet-name {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.8rem; font-weight: 800; color: var(--gray-900);
+  }
+  .profile-alert {
+    background: #fff3cd; border: 2px solid #f99830;
+    border-radius: 14px; padding: 14px;
+    margin: 20px 0; font-size: 0.88rem;
+    font-weight: 600; color: #7d5200;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .profile-info-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--gray-100);
+    text-align: left;
+  }
+  .profile-info-icon {
+    width: 36px; height: 36px;
+    background: var(--orange-pale); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .contact-btn {
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px;
+    background: var(--orange); color: white;
+    border: none; border-radius: 50px;
+    padding: 16px 32px; width: 100%;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    cursor: pointer; margin-top: 20px;
+    transition: all 0.2s;
+    text-decoration: none;
+    box-shadow: 0 6px 20px rgba(249,152,48,0.4);
+  }
+  .contact-btn:hover { background: var(--orange-dark); transform: translateY(-2px); }
+
+  /* ─── PLAN BADGE ─── */
+  .plan-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 14px; border-radius: 50px;
+    font-size: 0.78rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .plan-pill.free { background: var(--gray-100); color: var(--gray-700); }
+  .plan-pill.premium { background: var(--orange); color: white; }
+
+  /* ─── SECTION WAVE ─── */
+  .wave-divider { overflow: hidden; line-height: 0; }
+  .wave-divider svg { display: block; }
+
+  /* ─── HOW IT WORKS ─── */
+  .steps-row {
+    display: flex; justify-content: center;
+    gap: 0; flex-wrap: wrap; margin: 0 auto;
+    max-width: 900px; position: relative;
+  }
+  .how-step {
+    flex: 1; min-width: 200px; text-align: center;
+    padding: 0 20px; position: relative;
+  }
+  .how-step:not(:last-child)::after {
+    content: '→';
+    position: absolute; right: -10px; top: 24px;
+    font-size: 1.4rem; color: var(--orange-light);
+  }
+  .step-num {
+    width: 52px; height: 52px;
+    background: var(--orange); color: white;
+    border-radius: 50%;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.3rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .how-step h4 {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1rem; font-weight: 700;
+    margin-bottom: 8px; color: var(--gray-900);
+  }
+  .how-step p { font-size: 0.83rem; color: var(--gray-500); line-height: 1.5; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    background: var(--gray-900); color: white;
+    padding: 48px 5% 28px;
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 32px; margin-bottom: 36px;
+  }
+  .footer-logo {
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.5rem; font-weight: 800; color: var(--orange);
+    margin-bottom: 10px;
+  }
+  .footer-desc { font-size: 0.85rem; color: #888; line-height: 1.6; }
+  .footer-title { font-weight: 700; font-size: 0.85rem; color: #ccc; margin-bottom: 14px; }
+  .footer-links { list-style: none; }
+  .footer-links li { margin-bottom: 8px; }
+  .footer-links a { color: #888; font-size: 0.83rem; text-decoration: none; cursor: pointer; }
+  .footer-links a:hover { color: var(--orange); }
+  .footer-bottom {
+    border-top: 1px solid #333; padding-top: 20px;
+    font-size: 0.78rem; color: #666; text-align: center;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes floatIn {
+    from { opacity: 0; transform: translateX(40px) translateY(-50%); }
+    to { opacity: 1; transform: translateX(0) translateY(-50%); }
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249,152,48,0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(249,152,48,0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* ─── ALERTS ─── */
+  .alert {
+    padding: 12px 16px; border-radius: var(--radius-sm);
+    font-size: 0.85rem; font-weight: 600; margin-bottom: 16px;
+  }
+  .alert-success { background: #e8f5e9; color: #2e7d32; border: 1.5px solid #a5d6a7; }
+  .alert-error { background: #ffebee; color: #c62828; border: 1.5px solid #ef9a9a; }
+  .alert-info { background: var(--orange-pale); color: var(--orange-dark); border: 1.5px solid var(--orange-light); }
+
+  /* ─── TABS ─── */
+  .tabs { display: flex; gap: 4px; background: var(--gray-100); border-radius: 12px; padding: 4px; margin-bottom: 24px; }
+  .tab {
+    flex: 1; padding: 9px; text-align: center;
+    border: none; background: none; border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--gray-500); cursor: pointer; transition: all 0.2s;
+  }
+  .tab.active {
+    background: white; color: var(--orange);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  /* ─── PET CARD ─── */
+  .pet-card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px; border-radius: var(--radius-sm);
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-100);
+    margin-bottom: 12px; transition: all 0.2s;
+  }
+  .pet-card:hover { border-color: var(--orange); background: var(--orange-pale); }
+  .pet-emoji { font-size: 2rem; }
+  .pet-card-info h4 { font-weight: 700; font-size: 0.95rem; }
+  .pet-card-info p { font-size: 0.8rem; color: var(--gray-500); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .hero-visual { display: none; }
+    .hero-content { max-width: 100%; }
+    .nav-links a:not(.btn) { display: none; }
+    .how-step::after { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ─── API Service ──────────────────────────────────────────────────────────────
+const API_BASE = "http://localhost:8000";
+
+const api = {
+  async post(path, body, token) {
+    const res = await fetch(API_BASE + path, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(body)
+    });
+    return res.json();
+  },
+  async get(path, token) {
+    const res = await fetch(API_BASE + path, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    return res.json();
+  }
+};
+
+// ─── Auth Context ─────────────────────────────────────────────────────────────
+const AuthContext = React.createContext(null);
+
+function useAuth() { return React.useContext(AuthContext); }
+
+function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("pt_token");
+    const savedUser = localStorage.getItem("pt_user");
+    if (savedToken && savedUser) {
+      setToken(savedToken);
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  const login = (userData, tok) => {
+    setUser(userData);
+    setToken(tok);
+    localStorage.setItem("pt_token", tok);
+    localStorage.setItem("pt_user", JSON.stringify(userData));
+  };
+
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem("pt_token");
+    localStorage.removeItem("pt_user");
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, token, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// ─── Components ───────────────────────────────────────────────────────────────
+
+function NavBar({ page, setPage }) {
+  const { user, logout } = useAuth();
+  return (
+    <nav className="nav">
+      <div className="nav-logo" onClick={() => setPage("home")}>
+        <span>🐾</span> PetTrack
+      </div>
+      <div className="nav-links">
+        {!user && <>
+          <a onClick={() => setPage("home")}>Início</a>
+          <a onClick={() => document.getElementById("features")?.scrollIntoView({behavior:"smooth"})}>Recursos</a>
+          <a onClick={() => document.getElementById("pricing")?.scrollIntoView({behavior:"smooth"})}>Preços</a>
+          <button className="btn btn-outline btn-sm" onClick={() => setPage("login")}>Entrar</button>
+          <button className="btn btn-primary btn-sm" onClick={() => setPage("register")}>Começar Grátis</button>
+        </>}
+        {user && <>
+          <span style={{fontSize:"0.85rem", color:"var(--gray-700)"}}>
+            Olá, <strong>{user.name?.split(" ")[0]}</strong>
+          </span>
+          <span className={`plan-pill ${user.plan}`}>
+            {user.plan === "premium" ? "⭐ Premium" : "Gratuito"}
+          </span>
+          <button className="btn btn-primary btn-sm" onClick={() => setPage("dashboard")}>Dashboard</button>
+          <button className="btn btn-outline btn-sm" onClick={() => { logout(); setPage("home"); }}>Sair</button>
+        </>}
+      </div>
+    </nav>
+  );
+}
+
+// ─── Background Pets SVG ──────────────────────────────────────────────────────
+function BgPets() {
+  return (
+    <div className="hero-bg">
+      {/* Cat silhouettes */}
+      <svg width="200" height="200" style={{top:"10%",left:"2%",animation:"float 6s ease-in-out infinite"}} viewBox="0 0 200 200">
+        <path d="M100 160 C60 160 40 130 40 100 C40 80 50 65 60 60 L55 30 L75 50 C82 47 92 45 100 45 C108 45 118 47 125 50 L145 30 L140 60 C150 65 160 80 160 100 C160 130 140 160 100 160Z" fill="#f99830" opacity="0.15"/>
+        <circle cx="80" cy="95" r="5" fill="#f99830" opacity="0.15"/>
+        <circle cx="120" cy="95" r="5" fill="#f99830" opacity="0.15"/>
+      </svg>
+      {/* Dog silhouette */}
+      <svg width="180" height="160" style={{bottom:"15%",left:"3%",animation:"float 8s 1s ease-in-out infinite"}} viewBox="0 0 180 160">
+        <ellipse cx="90" cy="100" rx="55" ry="40" fill="#f99830" opacity="0.1"/>
+        <circle cx="90" cy="65" r="30" fill="#f99830" opacity="0.1"/>
+        <ellipse cx="55" cy="60" rx="15" ry="22" transform="rotate(-20 55 60)" fill="#f99830" opacity="0.1"/>
+        <ellipse cx="125" cy="60" rx="15" ry="22" transform="rotate(20 125 60)" fill="#f99830" opacity="0.1"/>
+        <ellipse cx="140" cy="100" rx="8" ry="20" transform="rotate(30 140 100)" fill="#f99830" opacity="0.1"/>
+      </svg>
+      {/* Paw prints */}
+      {[
+        {x:80,y:60},{x:95,y:75},{x:65,y:80},{x:110,y:85}
+      ].map((p,i) => (
+        <svg key={i} width="30" height="30" style={{position:"absolute",right:`${15+i*8}%`,top:`${20+i*15}%`,opacity:0.08}} viewBox="0 0 30 30">
+          <circle cx="15" cy="20" r="8" fill="#f99830"/>
+          <circle cx="8" cy="12" r="4" fill="#f99830"/>
+          <circle cx="22" cy="12" r="4" fill="#f99830"/>
+          <circle cx="5" cy="18" r="3" fill="#f99830"/>
+          <circle cx="25" cy="18" r="3" fill="#f99830"/>
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+// ─── HOME PAGE ────────────────────────────────────────────────────────────────
+function HomePage({ setPage }) {
+  const { user } = useAuth();
+
+  return (
+    <>
+      {/* Hero */}
+      <section className="hero">
+        <BgPets />
+        <div className="hero-content">
+          <div className="hero-badge">
+            🐾 A segurança do seu pet, sempre
+          </div>
+          <h1>
+            Nunca mais perca<br/>
+            <span>seu companheiro</span><br/>
+            de vista
+          </h1>
+          <p>
+            PetTrack é a plataforma completa para localizar, monitorar e cuidar do seu pet. 
+            QR Code inteligente na coleira + rastreador GPS + IA veterinária 24h.
+          </p>
+          <div className="hero-btns">
+            <button className="btn btn-primary btn-lg" onClick={() => setPage(user ? "dashboard" : "register")}>
+              Começar Gratuitamente 🚀
+            </button>
+            <button className="btn btn-outline btn-lg" onClick={() => document.getElementById("pricing")?.scrollIntoView({behavior:"smooth"})}>
+              Ver Planos
+            </button>
+          </div>
+        </div>
+        {/* Hero Visual Card */}
+        <div className="hero-visual">
+          <div className="hero-card">
+            <div className="hero-card-header">
+              <div className="pet-avatar">🐕</div>
+              <div>
+                <div style={{fontFamily:"'Baloo 2'",fontWeight:800,fontSize:"1.1rem"}}>Mel foi encontrada!</div>
+                <div style={{fontSize:"0.8rem",color:"var(--gray-500)"}}>QR Code escaneado · há 2 min</div>
+              </div>
+            </div>
+            <div style={{background:"var(--orange-pale)",borderRadius:"12px",padding:"14px",fontSize:"0.85rem",color:"var(--gray-700)"}}>
+              📍 Encontrei sua pet na Rua das Flores, 123. Por favor entre em contato!
+            </div>
+            <div className="hero-stats">
+              <div className="stat-box">
+                <span className="num">12k+</span>
+                <span className="lbl">Pets Cadastrados</span>
+              </div>
+              <div className="stat-box">
+                <span className="num">98%</span>
+                <span className="lbl">Taxa de Retorno</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="section section-center" style={{background:"white"}}>
+        <h2 className="section-title">Como <span>Funciona</span></h2>
+        <p className="section-sub">Em 3 passos simples, seu pet está protegido</p>
+        <div className="steps-row">
+          {[
+            { num: 1, icon: "📱", title: "Cadastre seu Pet", desc: "Crie o perfil completo com foto, raça e informações de contato" },
+            { num: 2, icon: "🏷️", title: "QR Code na Coleira", desc: "Gere o QR único e coloque na coleira. Quem achar escaneia e te encontra" },
+            { num: 3, icon: "🎉", title: "Pet de Volta!", desc: "Quem encontrar entra em contato direto. Simples e rápido" }
+          ].map(s => (
+            <div className="how-step" key={s.num}>
+              <div className="step-num">{s.num}</div>
+              <div style={{fontSize:"2rem",marginBottom:"12px"}}>{s.icon}</div>
+              <h4>{s.title}</h4>
+              <p>{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="section" id="features" style={{background:"var(--gray-50)"}}>
+        <h2 className="section-title section-center">Tudo que seu pet <span>precisa</span></h2>
+        <p className="section-sub section-center">Do plano gratuito ao premium, cobertura total</p>
+        <div className="features-grid">
+          {[
+            { icon: "🔲", title: "QR Code Inteligente", desc: "QR único por pet. Qualquer pessoa com câmera pode escanear e ver como te contatar — sem app necessário." },
+            { icon: "🔐", title: "Dados Criptografados", desc: "Seus dados pessoais são protegidos com criptografia AES-256 e JWT. Segurança de nível bancário.", premium: false },
+            { icon: "📦", title: "Coleira com QR Incluso", desc: "Assine o Premium e receba uma coleira física com QR Code embutido, enviada diretamente pra sua casa.", premium: true },
+            { icon: "📡", title: "Rastreador GPS", desc: "Micro rastreador integrado. Veja a localização em tempo real do seu pet direto no app.", premium: true },
+            { icon: "🤖", title: "IA Veterinária 24h", desc: "Assistente inteligente treinado para responder qualquer dúvida sobre saúde, alimentação e comportamento.", premium: true },
+            { icon: "🚚", title: "Acompanhe a Entrega", desc: "Rastreio em tempo real da sua coleira premium, do preparo até chegar na sua porta.", premium: true }
+          ].map((f, i) => (
+            <div className="feature-card" key={i}>
+              <div className="feature-icon">{f.icon}</div>
+              <h3>
+                {f.title}
+                {f.premium && <span className="badge-premium">Premium</span>}
+              </h3>
+              <p>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section className="section section-center" id="pricing" style={{background:"white"}}>
+        <h2 className="section-title">Planos e <span>Preços</span></h2>
+        <p className="section-sub">Comece grátis. Evolua quando quiser.</p>
+        <div className="pricing-grid">
+          <div className="price-card">
+            <div className="price-name">Gratuito</div>
+            <div className="price-val"><sup>R$</sup> 0</div>
+            <ul className="price-list">
+              {[
+                [true, "QR Code por pet"],
+                [true, "Perfil público de contato"],
+                [true, "Dados criptografados"],
+                [false, "Coleira física com QR"],
+                [false, "Rastreador GPS"],
+                [false, "IA Veterinária"],
+                [false, "Rastreio de entrega"],
+              ].map(([ok, txt], i) => (
+                <li key={i}>
+                  <span className={ok ? "check" : "x"}>{ok ? "✓" : "✗"}</span>
+                  <span style={{color: ok ? "var(--gray-700)" : "var(--gray-300)"}}>{txt}</span>
+                </li>
+              ))}
+            </ul>
+            <button className="btn btn-outline" style={{width:"100%"}} onClick={() => setPage("register")}>
+              Começar Grátis
+            </button>
+          </div>
+
+          <div className="price-card featured">
+            <div className="price-badge">MAIS POPULAR</div>
+            <div className="price-name">Premium</div>
+            <div className="price-val"><sup>R$</sup> 25<sub>/mês</sub></div>
+            <ul className="price-list">
+              {[
+                [true, "QR Code por pet"],
+                [true, "Perfil público de contato"],
+                [true, "Dados criptografados"],
+                [true, "Coleira física com QR"],
+                [true, "Rastreador GPS em tempo real"],
+                [true, "IA Veterinária 24h"],
+                [true, "Rastreio de entrega"],
+              ].map(([ok, txt], i) => (
+                <li key={i}>
+                  <span className="check">✓</span>
+                  <span>{txt}</span>
+                </li>
+              ))}
+            </ul>
+            <button className="btn btn-primary" style={{width:"100%"}} onClick={() => setPage(user ? "subscribe" : "register")}>
+              Assinar Premium — R$ 25/mês
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-grid">
+          <div>
+            <div className="footer-logo">🐾 PetTrack</div>
+            <p className="footer-desc">A plataforma mais completa para a segurança e bem-estar do seu pet.</p>
+          </div>
+          <div>
+            <div className="footer-title">PRODUTO</div>
+            <ul className="footer-links">
+              <li><a>Recursos</a></li>
+              <li><a>Planos</a></li>
+              <li><a>Coleira Smart</a></li>
+              <li><a>IA Veterinária</a></li>
+            </ul>
+          </div>
+          <div>
+            <div className="footer-title">EMPRESA</div>
+            <ul className="footer-links">
+              <li><a>Sobre nós</a></li>
+              <li><a>Blog</a></li>
+              <li><a>Contato</a></li>
+              <li><a>Imprensa</a></li>
+            </ul>
+          </div>
+          <div>
+            <div className="footer-title">LEGAL</div>
+            <ul className="footer-links">
+              <li><a>Privacidade</a></li>
+              <li><a>Termos de Uso</a></li>
+              <li><a>LGPD</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          © 2024 PetTrack. Feito com 🧡 para todos os pets e seus tutores.
+        </div>
+      </footer>
+    </>
+  );
+}
+
+// ─── LOGIN ────────────────────────────────────────────────────────────────────
+function LoginPage({ setPage }) {
+  const { login } = useAuth();
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async () => {
+    setLoading(true); setError("");
+    try {
+      const res = await api.post("/auth/login", form);
+      if (res.token) {
+        login({ name: res.name, plan: res.plan, id: res.user_id }, res.token);
+        setPage("dashboard");
+      } else {
+        setError(res.detail || "Credenciais inválidas");
+      }
+    } catch {
+      setError("Erro ao conectar. Verifique se o servidor está rodando.");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--orange-pale)",paddingTop:"80px"}}>
+      <div className="modal" style={{position:"relative",maxWidth:"420px",width:"100%",margin:"20px"}}>
+        <div style={{textAlign:"center",marginBottom:"28px"}}>
+          <div style={{fontSize:"2.5rem",marginBottom:"8px"}}>🐾</div>
+          <div className="modal-title">Bem-vindo de volta!</div>
+          <div className="modal-sub">Entre na sua conta PetTrack</div>
+        </div>
+        {error && <div className="alert alert-error">{error}</div>}
+        <div className="form-group">
+          <label className="form-label">Email</label>
+          <input className="form-input" type="email" placeholder="seu@email.com"
+            value={form.email} onChange={e => setForm({...form, email: e.target.value})}/>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Senha</label>
+          <input className="form-input" type="password" placeholder="••••••••"
+            value={form.password} onChange={e => setForm({...form, password: e.target.value})}
+            onKeyDown={e => e.key === "Enter" && handleSubmit()}/>
+        </div>
+        <button className="btn btn-primary" style={{width:"100%",padding:"14px"}} onClick={handleSubmit} disabled={loading}>
+          {loading ? "Entrando..." : "Entrar →"}
+        </button>
+        <p style={{textAlign:"center",marginTop:"20px",fontSize:"0.85rem",color:"var(--gray-500)"}}>
+          Não tem conta? <a style={{color:"var(--orange)",fontWeight:700,cursor:"pointer"}} onClick={() => setPage("register")}>Cadastre-se grátis</a>
+        </p>
+        <p style={{textAlign:"center",marginTop:"10px",fontSize:"0.85rem",color:"var(--gray-500)"}}>
+          <a style={{color:"var(--gray-500)",cursor:"pointer"}} onClick={() => setPage("home")}>← Voltar</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── REGISTER ─────────────────────────────────────────────────────────────────
+function RegisterPage({ setPage }) {
+  const { login } = useAuth();
+  const [form, setForm] = useState({ name: "", email: "", phone: "", social: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async () => {
+    setLoading(true); setError("");
+    try {
+      const res = await api.post("/auth/register", form);
+      if (res.token) {
+        login({ name: res.name, plan: "free", id: res.user_id }, res.token);
+        setPage("dashboard");
+      } else {
+        setError(res.detail || "Erro ao cadastrar");
+      }
+    } catch {
+      setError("Erro ao conectar. Verifique se o servidor está rodando.");
+    }
+    setLoading(false);
+  };
+
+  const f = (k) => e => setForm({...form, [k]: e.target.value});
+
+  return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--orange-pale)",paddingTop:"80px"}}>
+      <div className="modal" style={{position:"relative",maxWidth:"480px",width:"100%",margin:"20px"}}>
+        <div style={{textAlign:"center",marginBottom:"28px"}}>
+          <div style={{fontSize:"2.5rem",marginBottom:"8px"}}>🐾</div>
+          <div className="modal-title">Criar conta grátis</div>
+          <div className="modal-sub">Proteja seu pet agora mesmo</div>
+        </div>
+        {error && <div className="alert alert-error">{error}</div>}
+        <div className="form-group">
+          <label className="form-label">Nome completo</label>
+          <input className="form-input" placeholder="João Silva" value={form.name} onChange={f("name")}/>
+        </div>
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <input className="form-input" type="email" placeholder="seu@email.com" value={form.email} onChange={f("email")}/>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Telefone / WhatsApp</label>
+            <input className="form-input" placeholder="(11) 99999-9999" value={form.phone} onChange={f("phone")}/>
+          </div>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Instagram / Rede Social (opcional)</label>
+          <input className="form-input" placeholder="@seu_perfil" value={form.social} onChange={f("social")}/>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Senha</label>
+          <input className="form-input" type="password" placeholder="Mínimo 8 caracteres" value={form.password} onChange={f("password")}/>
+        </div>
+        <button className="btn btn-primary" style={{width:"100%",padding:"14px"}} onClick={handleSubmit} disabled={loading}>
+          {loading ? "Criando conta..." : "🚀 Criar Conta Grátis"}
+        </button>
+        <p style={{textAlign:"center",marginTop:"16px",fontSize:"0.8rem",color:"var(--gray-500)"}}>
+          Já tem conta? <a style={{color:"var(--orange)",fontWeight:700,cursor:"pointer"}} onClick={() => setPage("login")}>Entrar</a>
+        </p>
+        <p style={{textAlign:"center",marginTop:"8px",fontSize:"0.78rem",color:"var(--gray-400)"}}>
+          Ao criar, você concorda com nossos <a style={{color:"var(--orange)"}}>Termos</a> e <a style={{color:"var(--orange)"}}>Política de Privacidade</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ─── SUBSCRIBE ────────────────────────────────────────────────────────────────
+function SubscribePage({ setPage }) {
+  const { token, user, login } = useAuth();
+  const [form, setForm] = useState({ address: "", city: "", state: "", zip_code: "", complement: "" });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async () => {
+    if (!form.address || !form.city || !form.zip_code) {
+      setError("Preencha todos os campos obrigatórios"); return;
+    }
+    setLoading(true); setError("");
+    try {
+      const res = await api.post("/subscription/subscribe", form, token);
+      if (res.success) {
+        login({ ...user, plan: "premium" }, token);
+        setSuccess(true);
+        setTimeout(() => setPage("dashboard"), 2500);
+      } else {
+        setError(res.detail || "Erro ao assinar");
+      }
+    } catch {
+      setError("Erro ao conectar com o servidor");
+    }
+    setLoading(false);
+  };
+
+  const f = k => e => setForm({...form, [k]: e.target.value});
+
+  if (success) return (
+    <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--orange-pale)"}}>
+      <div style={{textAlign:"center",padding:"40px"}}>
+        <div style={{fontSize:"4rem",marginBottom:"20px"}}>🎉</div>
+        <h2 style={{fontFamily:"'Baloo 2'",fontSize:"2rem",color:"var(--gray-900)",marginBottom:"12px"}}>Parabéns! Seja Premium!</h2>
+        <p style={{color:"var(--gray-500)"}}>Sua assinatura foi ativada. Sua coleira está sendo preparada...</p>
+        <div style={{marginTop:"20px",color:"var(--orange)",fontWeight:700}}>Redirecionando para o Dashboard...</div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{minHeight:"100vh",background:"var(--orange-pale)",padding:"100px 20px 40px",display:"flex",justifyContent:"center"}}>
+      <div style={{maxWidth:"500px",width:"100%"}}>
+        <div className="modal" style={{position:"relative"}}>
+          <div style={{textAlign:"center",marginBottom:"28px"}}>
+            <div style={{fontSize:"2.5rem",marginBottom:"8px"}}>📦</div>
+            <div className="modal-title">Assinar Premium</div>
+            <div className="modal-sub">R$ 25/mês · Cancele quando quiser</div>
+          </div>
+          <div className="alert alert-info">
+            📬 Informe o endereço para receber sua <strong>Coleira Smart com QR Code</strong>!
+          </div>
+          {error && <div className="alert alert-error">{error}</div>}
+          <div className="form-group">
+            <label className="form-label">Endereço *</label>
+            <input className="form-input" placeholder="Rua, número" value={form.address} onChange={f("address")}/>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Cidade *</label>
+              <input className="form-input" placeholder="São Paulo" value={form.city} onChange={f("city")}/>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Estado *</label>
+              <input className="form-input" placeholder="SP" value={form.state} onChange={f("state")} maxLength={2}/>
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">CEP *</label>
+              <input className="form-input" placeholder="00000-000" value={form.zip_code} onChange={f("zip_code")}/>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Complemento</label>
+              <input className="form-input" placeholder="Apto, bloco..." value={form.complement} onChange={f("complement")}/>
+            </div>
+          </div>
+
+          <div style={{background:"var(--orange-pale)",borderRadius:"12px",padding:"16px",marginBottom:"20px"}}>
+            <div style={{fontWeight:700,marginBottom:"8px",color:"var(--gray-700)"}}>✨ O que você recebe:</div>
+            {["Coleira física com QR Code embutido","Rastreador GPS pelo app","IA Veterinária 24h","Rastreio de entrega em tempo real"].map((b,i) => (
+              <div key={i} style={{fontSize:"0.85rem",color:"var(--gray-600)",padding:"3px 0"}}>✅ {b}</div>
+            ))}
+          </div>
+
+          <button className="btn btn-primary" style={{width:"100%",padding:"14px"}} onClick={handleSubmit} disabled={loading}>
+            {loading ? "Processando..." : "💳 Assinar por R$ 25/mês"}
+          </button>
+          <p style={{textAlign:"center",marginTop:"12px"}}>
+            <a style={{color:"var(--gray-500)",fontSize:"0.85rem",cursor:"pointer"}} onClick={() => setPage("dashboard")}>← Voltar ao Dashboard</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── PUBLIC PROFILE (QR Code landing) ────────────────────────────────────────
+function PublicProfilePage({ qrToken }) {
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Mock data para demonstração
+    setProfile({
+      tutor_name: "João Silva",
+      phone: "(11) 99999-8888",
+      social: "@joaosilva",
+      pet_name: "Mel",
+      pet_species: "Cachorro",
+      pet_breed: "Golden Retriever",
+      pet_color: "Dourado",
+      pet_photo: ""
+    });
+    setLoading(false);
+  }, [qrToken]);
+
+  if (loading) return <div className="profile-page"><div>Carregando...</div></div>;
+  if (!profile) return <div className="profile-page"><div>QR Code inválido</div></div>;
+
+  return (
+    <div className="profile-page">
+      <div className="profile-card">
+        <div className="profile-pet-emoji">
+          {profile.pet_species?.toLowerCase().includes("gato") ? "🐱" : "🐕"}
+        </div>
+        <div className="profile-pet-name">{profile.pet_name}</div>
+        <div style={{fontSize:"0.85rem",color:"var(--gray-500)",marginBottom:"4px"}}>
+          {profile.pet_breed} · {profile.pet_color}
+        </div>
+
+        <div className="profile-alert">
+          <span style={{fontSize:"1.2rem"}}>🚨</span>
+          <span>Você encontrou este pet! O tutor precisa de ajuda para recuperá-lo.</span>
+        </div>
+
+        <div style={{textAlign:"left",marginBottom:"8px"}}>
+          <div className="profile-info-row">
+            <div className="profile-info-icon">👤</div>
+            <div>
+              <div style={{fontSize:"0.75rem",color:"var(--gray-500)",fontWeight:600}}>TUTOR</div>
+              <div style={{fontWeight:700}}>{profile.tutor_name}</div>
+            </div>
+          </div>
+          <div className="profile-info-row">
+            <div className="profile-info-icon">📱</div>
+            <div>
+              <div style={{fontSize:"0.75rem",color:"var(--gray-500)",fontWeight:600}}>TELEFONE / WHATSAPP</div>
+              <div style={{fontWeight:700}}>{profile.phone}</div>
+            </div>
+          </div>
+          {profile.social && (
+            <div className="profile-info-row">
+              <div className="profile-info-icon">📸</div>
+              <div>
+                <div style={{fontSize:"0.75rem",color:"var(--gray-500)",fontWeight:600}}>REDE SOCIAL</div>
+                <div style={{fontWeight:700}}>{profile.social}</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <a
+          href={`https://wa.me/55${profile.phone?.replace(/\D/g, "")}?text=Olá! Encontrei seu pet ${profile.pet_name} e gostaria de devolvê-lo.`}
+          target="_blank"
+          className="contact-btn"
+        >
+          💬 Entrar em Contato via WhatsApp
+        </a>
+        <div style={{marginTop:"16px",fontSize:"0.75rem",color:"var(--gray-400)",textAlign:"center"}}>
+          🔒 Dados protegidos por PetTrack · criptografia AES-256
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────────────────────
+function Dashboard({ setPage }) {
+  const { user, token } = useAuth();
+  const [activeTab, setActiveTab] = useState("pets");
+  const [pets, setPets] = useState([]);
+  const [showAddPet, setShowAddPet] = useState(false);
+  const [selectedQR, setSelectedQR] = useState(null);
+  const [delivery, setDelivery] = useState(null);
+  const [aiMessages, setAiMessages] = useState([
+    { type: "bot", text: "🐾 Olá! Sou a IA veterinária da PetTrack. Pode me perguntar sobre saúde, alimentação, vacinas, comportamento e muito mais sobre seu pet!" }
+  ]);
+  const [aiInput, setAiInput] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const isPremium = user?.plan === "premium";
+
+  useEffect(() => {
+    // Mock pets data
+    setPets([
+      { id: "1", name: "Mel", species: "Cachorro", breed: "Golden Retriever", qr_token: "abc123" }
+    ]);
+
+    if (isPremium) {
+      setDelivery({
+        tracking_code: "PT8F3A2B1C",
+        steps: [
+          { step: "Pedido Confirmado", done: true, time: "2024-01-15 10:30" },
+          { step: "Preparando Coleira", done: true, time: "2024-01-15 14:00" },
+          { step: "Saiu para Entrega", done: false, time: null },
+          { step: "Entrega Concluída", done: false, time: null }
+        ]
+      });
+    }
+  }, [isPremium]);
+
+  const sendAiMessage = async () => {
+    if (!aiInput.trim() || aiLoading) return;
+    const msg = aiInput.trim();
+    setAiInput("");
+    setAiMessages(m => [...m, { type: "user", text: msg }]);
+    setAiLoading(true);
+
+    // Simulate AI response (in production: api.post("/ai/ask", {message: msg}, token))
+    await new Promise(r => setTimeout(r, 1200));
+    const responses = {
+      "alimentação": "Para uma alimentação saudável, ofereça ração de qualidade 2-3x ao dia, sempre com água fresca. Evite alimentos tóxicos como chocolate, uva, cebola e alho. 🐾",
+      "vacina": "As vacinas essenciais são: V8/V10 anual para cães, Antirrábica (obrigatória), e Gripe. Para gatos: Quádrupla/Quíntupla e Antirrábica. Consulte seu vet a cada 6 meses! 💉",
+      "comportamento": "Comportamentos incomuns podem indicar: ansiedade, dor, ou mudanças no ambiente. Observe padrões: comer, dormir, brincar. Se persistir, visite um veterinário. 🧠",
+      "saúde": "Sinais de alerta: vômito frequente, letargia, perda de apetite, coceira excessiva. Leve ao vet imediatamente se notar esses sintomas! 🏥",
+    };
+    const key = Object.keys(responses).find(k => msg.toLowerCase().includes(k));
+    const reply = key ? responses[key] : "Ótima pergunta! Para essa dúvida específica, recomendo consultar um médico veterinário de confiança para um diagnóstico preciso. Posso ajudar com outras questões gerais sobre seu pet! 🐾";
+    setAiMessages(m => [...m, { type: "bot", text: reply }]);
+    setAiLoading(false);
+  };
+
+  const getQRCode = (pet) => {
+    // Generate a simple QR visual representation
+    setSelectedQR({
+      pet,
+      url: `https://pettrack.app/encontrei/${pet.qr_token}`,
+      img: null // In production: fetch from API
+    });
+  };
+
+  return (
+    <div className="dashboard">
+      <div className="dash-header">
+        <div>
+          <div className="dash-title">🐾 Meu PetTrack</div>
+          <div style={{fontSize:"0.85rem",color:"var(--gray-500)",marginTop:"4px"}}>
+            Olá, {user?.name?.split(" ")[0]}! Gerencie seus pets aqui.
+          </div>
+        </div>
+        <div style={{display:"flex",gap:"12px",alignItems:"center"}}>
+          <span className={`plan-pill ${user?.plan}`}>
+            {user?.plan === "premium" ? "⭐ Premium" : "🐾 Gratuito"}
+          </span>
+          {!isPremium && (
+            <button className="btn btn-primary btn-sm" onClick={() => setPage("subscribe")}>
+              Upgrade Premium R$25/mês
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="tabs">
+        <button className={`tab ${activeTab==="pets"?"active":""}`} onClick={() => setActiveTab("pets")}>🐾 Meus Pets</button>
+        {isPremium && <button className={`tab ${activeTab==="delivery"?"active":""}`} onClick={() => setActiveTab("delivery")}>📦 Entrega</button>}
+        {isPremium && <button className={`tab ${activeTab==="tracker"?"active":""}`} onClick={() => setActiveTab("tracker")}>📡 Rastreador</button>}
+        {isPremium && <button className={`tab ${activeTab==="ai"?"active":""}`} onClick={() => setActiveTab("ai")}>🤖 IA Veterinária</button>}
+      </div>
+
+      {/* ── PETS TAB ── */}
+      {activeTab === "pets" && (
+        <div className="dash-grid">
+          <div className="dash-card" style={{gridColumn:"span 2"}}>
+            <div className="dash-card-title">
+              🐾 Meus Pets
+              <button className="btn btn-primary btn-sm" style={{marginLeft:"auto"}} onClick={() => setShowAddPet(true)}>
+                + Adicionar Pet
+              </button>
+            </div>
+            {pets.map(p => (
+              <div className="pet-card" key={p.id}>
+                <div className="pet-emoji">{p.species?.toLowerCase().includes("gato") ? "🐱" : "🐕"}</div>
+                <div className="pet-card-info" style={{flex:1}}>
+                  <h4>{p.name}</h4>
+                  <p>{p.breed || p.species}</p>
+                </div>
+                <button className="btn btn-outline btn-sm" onClick={() => getQRCode(p)}>
+                  Ver QR Code
+                </button>
+              </div>
+            ))}
+            {pets.length === 0 && (
+              <div style={{textAlign:"center",padding:"32px",color:"var(--gray-500)"}}>
+                <div style={{fontSize:"2.5rem",marginBottom:"12px"}}>🐾</div>
+                <p>Nenhum pet cadastrado ainda.</p>
+                <button className="btn btn-primary" style={{marginTop:"16px"}} onClick={() => setShowAddPet(true)}>
+                  Adicionar meu primeiro pet
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* QR Preview */}
+          {selectedQR && (
+            <div className="dash-card">
+              <div className="dash-card-title">🔲 QR Code — {selectedQR.pet.name}</div>
+              <div className="qr-container">
+                <QRVisual url={selectedQR.url} />
+                <div style={{fontSize:"0.78rem",color:"var(--gray-500)",textAlign:"center",wordBreak:"break-all"}}>
+                  {selectedQR.url}
+                </div>
+                <div className="alert alert-info" style={{marginBottom:0,width:"100%"}}>
+                  📌 Cole este QR Code na coleira do {selectedQR.pet.name}. Quando escaneado, mostra seus dados de contato!
+                </div>
+                {!isPremium && (
+                  <div className="alert alert-success" style={{marginBottom:0,width:"100%"}}>
+                    💡 Assine o Premium para receber uma coleira física com o QR Code já incluso!
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── DELIVERY TAB (Premium) ── */}
+      {activeTab === "delivery" && isPremium && delivery && (
+        <div className="dash-grid">
+          <div className="dash-card">
+            <div className="dash-card-title">📦 Rastrear Entrega</div>
+            <div style={{background:"var(--orange-pale)",borderRadius:"12px",padding:"14px",marginBottom:"20px"}}>
+              <div style={{fontSize:"0.78rem",color:"var(--gray-500)",fontWeight:600}}>CÓDIGO DE RASTREIO</div>
+              <div style={{fontFamily:"'Baloo 2'",fontSize:"1.2rem",fontWeight:800,color:"var(--orange)"}}>{delivery.tracking_code}</div>
+            </div>
+            <div className="delivery-steps">
+              {delivery.steps.map((s, i) => {
+                const prevDone = i === 0 || delivery.steps[i-1].done;
+                const isActive = prevDone && !s.done;
+                return (
+                  <div className={`delivery-step ${s.done ? "done" : ""} ${isActive ? "active" : ""}`} key={i}>
+                    <div className="step-circle">
+                      {s.done ? "✓" : isActive ? "→" : i+1}
+                    </div>
+                    <div className="step-info">
+                      <div className="step-name">{s.step}</div>
+                      <div className="step-time">{s.time || (isActive ? "Em andamento..." : "Aguardando")}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="dash-card">
+            <div className="dash-card-title">📦 Status da Coleira Smart</div>
+            <div style={{textAlign:"center",padding:"20px"}}>
+              <div style={{fontSize:"3rem",marginBottom:"16px"}}>🏷️</div>
+              <div style={{fontFamily:"'Baloo 2'",fontSize:"1.1rem",fontWeight:700,color:"var(--orange)",marginBottom:"8px"}}>
+                Coleira em Preparação
+              </div>
+              <p style={{fontSize:"0.85rem",color:"var(--gray-500)",lineHeight:1.6}}>
+                Sua coleira Smart com QR Code está sendo preparada. 
+                Você receberá uma notificação quando sair para entrega!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TRACKER TAB (Premium) ── */}
+      {activeTab === "tracker" && isPremium && (
+        <div className="dash-grid">
+          <div className="dash-card">
+            <div className="dash-card-title">📡 Micro Rastreador GPS</div>
+            <div className="tracker-map">
+              <div className="tracker-map-grid"/>
+              <div className="tracker-dot"/>
+              <div className="tracker-label">🐕 Mel · Atualizado há 2 min</div>
+            </div>
+            <div style={{marginTop:"16px"}}>
+              <div className="alert alert-success" style={{marginBottom:"12px"}}>
+                ✅ Rastreador ativo · Sinal excelente
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+                <div className="stat-box" style={{background:"var(--gray-50)",border:"1.5px solid var(--gray-100)"}}>
+                  <span className="num" style={{fontSize:"1.1rem"}}>-23.5505°</span>
+                  <span className="lbl">Latitude</span>
+                </div>
+                <div className="stat-box" style={{background:"var(--gray-50)",border:"1.5px solid var(--gray-100)"}}>
+                  <span className="num" style={{fontSize:"1.1rem"}}>-46.6333°</span>
+                  <span className="lbl">Longitude</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="dash-card">
+            <div className="dash-card-title">📈 Histórico de Localização</div>
+            <div style={{padding:"16px 0"}}>
+              {[
+                {time:"14:32", local:"Rua das Flores, 123", status:"Em movimento"},
+                {time:"13:15", local:"Parque Vila Madalena", status:"Parado 45 min"},
+                {time:"11:00", local:"Casa (Av. Principal, 50)", status:"Em casa"},
+              ].map((h, i) => (
+                <div key={i} style={{display:"flex",gap:"12px",padding:"10px 0",borderBottom:"1px solid var(--gray-100)"}}>
+                  <div style={{fontSize:"0.75rem",color:"var(--gray-500)",fontWeight:700,minWidth:"42px"}}>{h.time}</div>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:"0.85rem",fontWeight:700}}>{h.local}</div>
+                    <div style={{fontSize:"0.75rem",color:"var(--gray-500)"}}>{h.status}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── AI TAB (Premium) ── */}
+      {activeTab === "ai" && isPremium && (
+        <div className="dash-grid">
+          <div className="dash-card" style={{gridColumn:"span 2"}}>
+            <div className="dash-card-title">🤖 IA Veterinária PetTrack</div>
+            <div className="alert alert-info" style={{marginBottom:"16px"}}>
+              Pergunte qualquer coisa sobre seu pet: saúde, alimentação, vacinas, comportamento, etc.
+            </div>
+            <div className="ai-chat">
+              <div className="chat-messages">
+                {aiMessages.map((m, i) => (
+                  <div key={i} className={`chat-bubble ${m.type}`}>{m.text}</div>
+                ))}
+                {aiLoading && (
+                  <div className="chat-bubble bot" style={{color:"var(--gray-400)"}}>
+                    🐾 Pensando...
+                  </div>
+                )}
+              </div>
+              <div className="chat-input-row">
+                <input
+                  className="chat-input"
+                  placeholder="Pergunte sobre alimentação, saúde, vacinas..."
+                  value={aiInput}
+                  onChange={e => setAiInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && sendAiMessage()}
+                />
+                <button className="chat-send" onClick={sendAiMessage}>➤</button>
+              </div>
+              <div style={{marginTop:"12px",display:"flex",gap:"8px",flexWrap:"wrap"}}>
+                {["Alimentação saudável","Vacinas necessárias","Comportamento estranho","Quanto exercício?"].map(q => (
+                  <button key={q} onClick={() => setAiInput(q)}
+                    style={{background:"var(--orange-pale)",border:"1.5px solid var(--orange-light)",
+                    borderRadius:"50px",padding:"4px 12px",fontSize:"0.75rem",fontWeight:700,
+                    color:"var(--orange-dark)",cursor:"pointer"}}>
+                    {q}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Not Premium Prompt */}
+      {!isPremium && (activeTab === "delivery" || activeTab === "tracker" || activeTab === "ai") && (
+        <div style={{textAlign:"center",padding:"60px 20px"}}>
+          <div style={{fontSize:"3rem",marginBottom:"16px"}}>⭐</div>
+          <h3 style={{fontFamily:"'Baloo 2'",fontSize:"1.6rem",marginBottom:"12px"}}>Recurso Premium</h3>
+          <p style={{color:"var(--gray-500)",marginBottom:"24px"}}>
+            Assine o plano Premium por R$25/mês e desbloqueie rastreador GPS, IA veterinária e coleira smart!
+          </p>
+          <button className="btn btn-primary btn-lg" onClick={() => setPage("subscribe")}>
+            Assinar Agora — R$ 25/mês
+          </button>
+        </div>
+      )}
+
+      {/* Add Pet Modal */}
+      {showAddPet && <AddPetModal onClose={() => setShowAddPet(false)} onAdd={p => { setPets([...pets, p]); setShowAddPet(false); }} token={token} />}
+    </div>
+  );
+}
+
+// ─── ADD PET MODAL ────────────────────────────────────────────────────────────
+function AddPetModal({ onClose, onAdd, token }) {
+  const [form, setForm] = useState({ name: "", species: "Cachorro", breed: "", age: "", color: "" });
+  const [loading, setLoading] = useState(false);
+
+  const handleAdd = async () => {
+    setLoading(true);
+    try {
+      const res = await api.post("/pets", { ...form, age: parseInt(form.age) || null }, token);
+      if (res.pet_id) {
+        onAdd({ id: res.pet_id, ...form, qr_token: res.qr_token });
+      } else {
+        // Demo mode - add locally
+        onAdd({ id: Date.now().toString(), ...form, qr_token: Math.random().toString(36).slice(2) });
+      }
+    } catch {
+      onAdd({ id: Date.now().toString(), ...form, qr_token: Math.random().toString(36).slice(2) });
+    }
+    setLoading(false);
+  };
+
+  const f = k => e => setForm({...form, [k]: e.target.value});
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <button className="close-btn" onClick={onClose}>✕</button>
+        <div className="modal-title">Adicionar Pet</div>
+        <div className="modal-sub">Cadastre as informações do seu pet</div>
+        <div className="form-group">
+          <label className="form-label">Nome do Pet *</label>
+          <input className="form-input" placeholder="Ex: Mel, Thor, Luna" value={form.name} onChange={f("name")}/>
+        </div>
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Espécie</label>
+            <select className="form-input" value={form.species} onChange={f("species")}>
+              <option>Cachorro</option>
+              <option>Gato</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Raça</label>
+            <input className="form-input" placeholder="Golden Retriever" value={form.breed} onChange={f("breed")}/>
+          </div>
+        </div>
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Idade (anos)</label>
+            <input className="form-input" type="number" placeholder="3" value={form.age} onChange={f("age")}/>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Cor / Pelagem</label>
+            <input className="form-input" placeholder="Dourado" value={form.color} onChange={f("color")}/>
+          </div>
+        </div>
+        <button className="btn btn-primary" style={{width:"100%",padding:"14px"}} onClick={handleAdd} disabled={loading || !form.name}>
+          {loading ? "Cadastrando..." : "🐾 Cadastrar Pet e Gerar QR Code"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── QR CODE Visual Component ─────────────────────────────────────────────────
+function QRVisual({ url }) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    // Simple QR-like visual using canvas
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const size = 180;
+    canvas.width = size; canvas.height = size;
+
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, size, size);
+
+    // Draw QR pattern simulation
+    const cellSize = 9;
+    const cols = Math.floor(size / cellSize);
+    ctx.fillStyle = "#f99830";
+
+    // Corner markers
+    const drawMarker = (x, y) => {
+      ctx.fillStyle = "#f99830";
+      ctx.fillRect(x, y, cellSize*7, cellSize*7);
+      ctx.fillStyle = "white";
+      ctx.fillRect(x+cellSize, y+cellSize, cellSize*5, cellSize*5);
+      ctx.fillStyle = "#f99830";
+      ctx.fillRect(x+cellSize*2, y+cellSize*2, cellSize*3, cellSize*3);
+    };
+    drawMarker(cellSize, cellSize);
+    drawMarker(size-cellSize*8, cellSize);
+    drawMarker(cellSize, size-cellSize*8);
+
+    // Random data cells
+    const seed = url.split("").reduce((a,c) => a + c.charCodeAt(0), 0);
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < cols; j++) {
+        if ((i < 9 && j < 9) || (i > cols-10 && j < 9) || (i < 9 && j > cols-10)) continue;
+        const val = ((seed * (i+1) * (j+1) * 7919) % 100);
+        if (val > 45) {
+          ctx.fillStyle = val > 70 ? "#f99830" : "#fdb96a";
+          ctx.fillRect(i*cellSize+2, j*cellSize+2, cellSize-2, cellSize-2);
+        }
+      }
+    }
+
+    // Logo in center
+    ctx.fillStyle = "white";
+    ctx.fillRect(size/2-18, size/2-18, 36, 36);
+    ctx.font = "22px serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("🐾", size/2, size/2);
+  }, [url]);
+
+  return <canvas ref={canvasRef} style={{borderRadius:"12px",border:"3px solid var(--orange)"}}/>;
+}
+
+// ─── APP ROUTER ───────────────────────────────────────────────────────────────
+function App() {
+  const [page, setPage] = useState("home");
+  const [qrToken, setQrToken] = useState(null);
+
+  // Check for QR route
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith("#/encontrei/")) {
+      const token = hash.replace("#/encontrei/", "");
+      setQrToken(token);
+      setPage("profile");
+    }
+  }, []);
+
+  // Special routes without nav
+  if (page === "profile") {
+    return (
+      <AuthProvider>
+        <PublicProfilePage qrToken={qrToken} setPage={setPage}/>
+      </AuthProvider>
+    );
+  }
+
+  return (
+    <AuthProvider>
+      <AppWithNav page={page} setPage={setPage}/>
+    </AuthProvider>
+  );
+}
+
+function AppWithNav({ page, setPage }) {
+  const nav = <NavBar page={page} setPage={setPage}/>;
+
+  return (
+    <>
+      {nav}
+      {page === "home" && <HomePage setPage={setPage}/>}
+      {page === "login" && <LoginPage setPage={setPage}/>}
+      {page === "register" && <RegisterPage setPage={setPage}/>}
+      {page === "subscribe" && <SubscribePage setPage={setPage}/>}
+      {page === "dashboard" && <Dashboard setPage={setPage}/>}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
