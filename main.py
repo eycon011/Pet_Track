@@ -32,6 +32,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def home():
+    return {"message": "PetTrack API online"}
+
 # ─── Encryption Keys ─────────────────────────────────────────────────────────
 SECRET_KEY = "pettrack_super_secret_2024_jwt_key_256bits_secure"
 FERNET_KEY = Fernet.generate_key()
